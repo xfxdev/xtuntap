@@ -5,6 +5,6 @@ import (
 	"os"
 )
 
-func tuntapAlloc(name string, bTun bool) (*os.File, error) {
-	return nil, errors.New("not implement")
+func tuntapAlloc(name string, bTun bool) (*os.File, string, error) {
+	return nil, "", errors.New("not implement")
 }

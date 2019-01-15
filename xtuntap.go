@@ -14,13 +14,13 @@ type TunDevice struct {
 }
 
 func NewTun(name string) (Tun, error) {
-	f, err := tuntapAlloc(name, true)
+	f, nn, err := tuntapAlloc(name, true)
 	if err != nil {
 		return nil, err
 	}
 	return &TunDevice{
 		ReadWriteCloser: f,
-		name:            name,
+		name:            nn,
 	}, nil
 }
 

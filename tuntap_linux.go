@@ -13,14 +13,14 @@ type ifreq struct {
 	_pad  [24 - unsafe.Sizeof(uint16(0))]byte
 }
 
-func tuntapAlloc(name string, bTun bool) (*os.File, error) {
+func tuntapAlloc(name string, bTun bool) (*os.File, string, error) {
 	if len(name) > syscall.IFNAMSIZ-1 {
-		return nil, errors.New("device name too long")
+		return nil, "", errors.New("device name too long")
 	}
 
 	f, err := os.OpenFile("/dev/net/tun", os.O_RDWR, 0600)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	fd := f.Fd()
@@ -50,12 +50,9 @@ func tuntapAlloc(name string, bTun bool) (*os.File, error) {
 	/* try to create the device */
 	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, fd, syscall.TUNSETIFF, uintptr(unsafe.Pointer(&ifr)), 0, 0, 0); e != 0 {
 		f.Close()
-		return nil, e
+		return nil, "", e
 	}
 
-	/* if the operation was successful, write back the name of the
-	 * interface to the variable "dev", so the caller can know it. */
-	// to do
-
-	return f, nil
+	// return kernel allocated name
+	return f, string(ifr.name[:]), nil
 }
